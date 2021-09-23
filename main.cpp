@@ -7,6 +7,7 @@
  * \author Kenneth Michael (Mikey) Neal
  * \date Initial Upload: 23 September 2021
  * \copyright Kenneth Michael (Mikey) Neal (c) 23 September 2021 under GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+ * \remark This code does not currently support the whole RISC-V ISA, including psudo-instructions.
  * \remark This code is still prerelease, do please report any bugs or errors through the github issue tracker.
  */
 
@@ -29,10 +30,62 @@
 
 using namespace std;
 
-map <string, uint64_t> labels;
-char instruction_type;
+/**
+ * \brief \c risc_v_assembler is a class that allows for the assembly of RISC-V into a file.
+ * \note If you would like a binary executable, edit the fprintf statement in the \c process() function.
+ */
+class risc_v_assembler {
+	protected:
+		/**
+		 * \brief \c input_file holds the name of the input file.
+		 */
+		char * input_file = nullptr;
+		/**
+		 * \brief \c output_file holds the name of the output file.
+		 */
+		char * output_file = nullptr;
+		/**
+		 * \brief \c labels holds the locations of all of the labels in the file by the location of the next instruction.
+		 */
+		map <string, uint64_t> labels;
+		
+		uint32_t getRegister(string, uint8_t);
+		uint32_t getOpcode(string, char&);
+		void makeLabel(string, uint64_t);
+		uint64_t findLabelPos(string);
+		uint32_t processLine(string, uint64_t);
+	public:
+		/**
+		 * \brief Default constructor.
+		 */
+		risc_v_assembler() {}
+		/**
+		 * \brief Constructor with file names.
+		 * 
+		 * \param [in] input_file_name is the name of the input file.
+		 * \param [in] output_file_name is the name of the output file.
+		 */
+		risc_v_assembler(char * input_file_name, char * output_file_name) {
+			input_file = input_file_name;
+			output_file = output_file_name;
+		}
+		
+		void process();
+		char * getInputFile();
+		char * getOutputFile();
+		void setInputFile(char * );
+		void setOutputFile(char * );
+		
+};
 
-uint32_t getRegister(string input, uint8_t offset = 0) {
+/**
+ * \brief \c getRegister() is a function that interprets strings and gives the corresponding register out.
+ * 
+ * \param [in] input is a string to be interpreted as a register.
+ * \param [in] offset is the logical shift left amount for the output. 
+ * \return the register number 0-31
+ */
+uint32_t risc_v_assembler::getRegister(string input, uint8_t offset = 0) {
 	uint32_t numeric_part = 0;
 	string non_numeric_part = "";
 	
@@ -85,7 +138,17 @@ uint32_t getRegister(string input, uint8_t offset = 0) {
 	return 0;
 }
 
-uint32_t getOpcode(string input) {
+/**
+ * \brief \c getOpcode() compares a string with an instruction list to determine what type it is and the base opcode. 
+ * 
+ * \param [in] input is the instruction to be compared.
+ * \param [out] instruction_type is the RISC-V instruction type.
+ * \returns The base opcode for an instruction.
+ * 
+ * \details This function will error out if an unknown opcode is entered.
+ * \note This is the function that needs to be edited to add more instructions.
+ */
+uint32_t risc_v_assembler::getOpcode(string input, char &instruction_type) {
 	instruction_type = 0;
 	if (input.compare("lb") == 0) {
 		instruction_type = 'I';
@@ -281,11 +344,27 @@ uint32_t getOpcode(string input) {
 	return 0;
 }
 
-void makeLabel(string name, uint64_t pos) {
+/**
+ * \brief \c makeLabel() adds a label to branch/jump to. 
+ * 
+ * \param [in] name is the name of the branch.
+ * \param [in] pos is the position.
+ */
+void risc_v_assembler::makeLabel(string name, uint64_t pos) {
 	labels[name] = pos;
 }
 
-uint64_t findLabelPos(string name) {
+
+
+/**
+ * \brief \c findLabelPos() gets the location of the label that was branched/jumped to. 
+ * 
+ * \param [in] name is the name of the branch.
+ * \returns The location of the label.
+ * 
+ * \details This function will error out if an unknown label is entered.
+ */
+uint64_t risc_v_assembler::findLabelPos(string name) {
 	map<string, uint64_t>::iterator it = labels.find(name);
 	if (it == labels.end()) {
 		cerr << "ERROR: undefined label \"" << name << "\"\n";
@@ -294,10 +373,22 @@ uint64_t findLabelPos(string name) {
 	return labels[name];
 }
 
-uint32_t processLine(string input, uint64_t pos) {
+/**
+ * \brief \c processLine() assembles the machine code for one line. 
+ * 
+ * \param [in] input is the line from the file.
+ * \param [in] pos is the instruction number.
+ * \returns The instruction in HEX.
+ * 
+ * \details This function will error out if there are any issues.
+ * \note This is the function that needs to be edited to add more instruction types.
+ */
+uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 	stringstream ss_input(input);
 	string temp;
 	ss_input >> temp;
+
+	char instruction_type;
 	
 	if ((temp.size() == 0 ) || (temp.at(0) == '#')) {
 		return 0;
@@ -315,7 +406,7 @@ uint32_t processLine(string input, uint64_t pos) {
 		return 0;
 	}
 	
-	uint32_t instruction = getOpcode(temp);
+	uint32_t instruction = getOpcode(temp, instruction_type);
 	
 	ss_input >> temp;
 	
@@ -466,7 +557,8 @@ uint32_t processLine(string input, uint64_t pos) {
 			}
 		break;
 		default:
-			cout << "error\n" << flush;
+			cerr << "ERROR: unknown type \'" << instruction_type << "\'\n";
+			abort();
 	}
 	
 	ss_input >> temp;
@@ -478,11 +570,27 @@ uint32_t processLine(string input, uint64_t pos) {
 	return instruction;
 }
 
-int main(int argc, char * argv[]) {
-	fstream fin(argv[1], fstream::in);
+/**
+ * \brief \c process() assembles the machine code line by line and exports to a file in hex NOT Executable. 
+ * 
+ * \details This function will error out if there are any issues.
+ * \note If you would like a binary executable, edit the fprintf statement.
+ */
+void risc_v_assembler::process() {
+	fstream fin(input_file, fstream::in);
+	
+	if (!fin.is_open()) {
+		cerr << "ERROR: invalid input file.\n";
+		abort();
+	}
 	
 	FILE * fout;
-	fout = fopen(argv[2], "w");
+	fout = fopen(output_file, "w");
+	
+	if (fout == nullptr) {
+		cerr << "ERROR: invalid output file.\n";
+		abort();
+	}
 	
 	uint32_t instruction;
 	
@@ -523,5 +631,49 @@ int main(int argc, char * argv[]) {
 		getline(fin, input);
 	}
 	fin.close();
+	fclose(fout);
+}
+
+/**
+ * \brief \c getInputFile() returns the input file name. 
+ * 
+ * \returns \c input_file
+ */
+char * risc_v_assembler::getInputFile() {
+	return input_file;
+}
+
+/**
+ * \brief \c getOutputFile() returns the output file name. 
+ * 
+ * \returns \c output_file
+ */
+char * risc_v_assembler::getOutputFile() {
+	return output_file;
+}
+
+/**
+ * \brief \c setInputFile() sets the input file name. 
+ * 
+ * \param [in] input_file_name sets input_file.
+ */
+void risc_v_assembler::setInputFile(char * input_file_name) {
+	input_file = input_file_name;
+}
+
+/**
+ * \brief \c setOutputFile() sets the output file name. 
+ * 
+ * \param [in] output_file_name sets output_file.
+ */
+void risc_v_assembler::setOutputFile(char * output_file_name) {
+	output_file = output_file_name;
+}
+
+
+int main(int argc, char * argv[]) {
+	risc_v_assembler r1(argv[1], argv[2]);
+	r1.process();
+	
 	return 0;
 }

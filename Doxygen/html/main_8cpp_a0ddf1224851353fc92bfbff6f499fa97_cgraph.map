@@ -1,8 +1,9 @@
 <map id="main" name="main">
 <area shape="rect" id="node1" title=" " alt="" coords="5,31,56,57"/>
-<area shape="rect" id="node2" href="$main_8cpp.html#ac173058753effe9010f828690505bfe9" title=" " alt="" coords="107,5,193,32"/>
-<area shape="rect" id="node3" href="$main_8cpp.html#ac0aa95aba20b2a8ff85cfa8da87fbdb8" title=" " alt="" coords="104,56,196,83"/>
-<area shape="rect" id="node4" href="$main_8cpp.html#ac58a45b704cd4c5094b1279794b829db" title=" " alt="" coords="244,5,340,32"/>
-<area shape="rect" id="node5" href="$main_8cpp.html#ab2648685830fefed038865d3f3d7e019" title=" " alt="" coords="249,56,335,83"/>
-<area shape="rect" id="node6" href="$main_8cpp.html#a171d54920772ac2cbfc5765ff1b43d1f" title=" " alt="" coords="248,107,336,133"/>
+<area shape="rect" id="node2" href="$classrisc__v__assembler.html#a4210472501398d94d4f40aa3e73b5c94" title="process() assembles the machine code line by line and exports to a file in hex NOT Executable." alt="" coords="104,31,280,57"/>
+<area shape="rect" id="node3" href="$classrisc__v__assembler.html#a265c1b04726d2f47d7290652a47205f9" title="makeLabel() adds a label to branch/jump to." alt="" coords="331,5,525,32"/>
+<area shape="rect" id="node4" href="$classrisc__v__assembler.html#abcb8fd769b23409aab48bbcc467d1af3" title="processLine() assembles the machine code for one line." alt="" coords="328,56,528,83"/>
+<area shape="rect" id="node5" href="$classrisc__v__assembler.html#a3f94e3738307c3bced32d5d7084ede96" title="findLabelPos() gets the location of the label that was branched/jumped to." alt="" coords="576,5,780,32"/>
+<area shape="rect" id="node6" href="$classrisc__v__assembler.html#abc0fbceb7343e60b591cf790f01dc976" title="getOpcode() compares a string with an instruction list to determine what type it is and the base opco..." alt="" coords="581,56,775,83"/>
+<area shape="rect" id="node7" href="$classrisc__v__assembler.html#a6f0b326bd879010c5e1f6f2ef0a83838" title="getRegister() is a function that interprets strings and gives the corresponding register out." alt="" coords="580,107,776,133"/>
 </map>

@@ -36,7 +36,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="main_8cpp.html#ab2648685830fefed038865d3f3d7e019" target="_top" xlink:title=" ">
+<g id="a_node3"><a xlink:href="main_8cpp.html#a233190381784626792db231a165306d9" target="_top" xlink:title="getOpcode compares a string with an instruction list to determine what type it is and the base opcode...">
 <polygon fill="white" stroke="black" points="109,-38.5 109,-57.5 173,-57.5 173,-38.5 109,-38.5"/>
 <text text-anchor="middle" x="141" y="-45.5" font-family="Helvetica,sans-Serif" font-size="10.00">getOpcode</text>
 </a>
@@ -51,7 +51,7 @@
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="main_8cpp.html#a171d54920772ac2cbfc5765ff1b43d1f" target="_top" xlink:title=" ">
+<g id="a_node4"><a xlink:href="main_8cpp.html#a171d54920772ac2cbfc5765ff1b43d1f" target="_top" xlink:title="getRegister is a function that interprets strings and gives the corresponding register out.">
 <polygon fill="white" stroke="black" points="108,-0.5 108,-19.5 174,-19.5 174,-0.5 108,-0.5"/>
 <text text-anchor="middle" x="141" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">getRegister</text>
 </a>

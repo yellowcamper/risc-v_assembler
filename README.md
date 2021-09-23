@@ -1,6 +1,6 @@
 Github Repository at: https://github.com/yellowcamper/risc-v_assembler
 
-Documentation at: https://yellowcamper.github.io/extended-maps
+Documentation at: http://yellowcamper.github.io/risc-v_assembler/
 
 By: Kenneth Michael (Mikey) Neal
 

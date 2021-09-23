@@ -1,5 +1,5 @@
 <map id="getRegister" name="getRegister">
-<area shape="rect" id="node1" title=" " alt="" coords="244,5,332,32"/>
+<area shape="rect" id="node1" title="getRegister is a function that interprets strings and gives the corresponding register out." alt="" coords="244,5,332,32"/>
 <area shape="rect" id="node2" href="$main_8cpp.html#ac0aa95aba20b2a8ff85cfa8da87fbdb8" title=" " alt="" coords="104,5,196,32"/>
 <area shape="rect" id="node3" href="$main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,5,56,32"/>
 </map>

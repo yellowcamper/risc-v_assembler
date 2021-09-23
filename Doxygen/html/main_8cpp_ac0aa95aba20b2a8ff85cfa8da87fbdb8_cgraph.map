@@ -1,6 +1,6 @@
 <map id="processLine" name="processLine">
 <area shape="rect" id="node1" title=" " alt="" coords="5,56,97,83"/>
 <area shape="rect" id="node2" href="$main_8cpp.html#ac58a45b704cd4c5094b1279794b829db" title=" " alt="" coords="145,5,241,32"/>
-<area shape="rect" id="node3" href="$main_8cpp.html#ab2648685830fefed038865d3f3d7e019" title=" " alt="" coords="151,56,236,83"/>
-<area shape="rect" id="node4" href="$main_8cpp.html#a171d54920772ac2cbfc5765ff1b43d1f" title=" " alt="" coords="149,107,237,133"/>
+<area shape="rect" id="node3" href="$main_8cpp.html#a233190381784626792db231a165306d9" title="getOpcode compares a string with an instruction list to determine what type it is and the base opcode..." alt="" coords="151,56,236,83"/>
+<area shape="rect" id="node4" href="$main_8cpp.html#a171d54920772ac2cbfc5765ff1b43d1f" title="getRegister is a function that interprets strings and gives the corresponding register out." alt="" coords="149,107,237,133"/>
 </map>
