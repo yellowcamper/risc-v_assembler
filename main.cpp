@@ -24,6 +24,7 @@
 #include <iostream>
 #include <cstdint>
 #include <cstdio>
+#include <cctype>
 #include <sstream>
 #include <string>
 #include <map>
@@ -354,6 +355,8 @@ void risc_v_assembler::makeLabel(string name, uint64_t pos) {
 	labels[name] = pos;
 }
 
+
+
 /**
  * \brief \c findLabelPos() gets the location of the label that was branched/jumped to. 
  * 
@@ -447,11 +450,11 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 				abort();
 			}
 			if ((temp.size() >= 2) && (temp.at(0) == '0') && (temp.at(1) == 'x')) {
-				instruction |= ((stoi(temp, nullptr, 16)) >> 12) << 12;
+				instruction |= ((stoi(temp, nullptr, 16)) << 12);
 			} else if ((temp.at(0) <= '9') && (temp.at(0) >= '0')) {
-				instruction |= ((stoi(temp, nullptr)) >> 12) << 12;
+				instruction |= ((stoi(temp, nullptr)) << 12);
 			} else {
-				instruction |= (((findLabelPos(temp) - pos)) >> 12) << 12;
+				instruction |= (((findLabelPos(temp) - pos)) << 12);
 			}
 		break;
 		case 'R':
@@ -597,8 +600,20 @@ void risc_v_assembler::process() {
 	stringstream ss_input(input);
 	string temp;
 	
-	for (int i = 1; fin && ss_input; i++) {
+	for (int i = 1; fin; i++) {	
 		ss_input >> temp;
+		
+		if (!ss_input) {
+			if ((ss_input.str().size() != 0) && isspace(ss_input.str().at(0))) {
+				ss_input.clear();
+				continue;
+			} else {
+				ss_input.clear();
+				getline(fin, input);
+				ss_input.str(input);
+				continue;
+			}
+		}
 		
 		if ((temp.size() != 0) && (temp.at(temp.size() - 1) == ':')) {
 			makeLabel(temp.substr(0, (temp.size() - 1)), i);
@@ -667,6 +682,7 @@ void risc_v_assembler::setInputFile(char * input_file_name) {
 void risc_v_assembler::setOutputFile(char * output_file_name) {
 	output_file = output_file_name;
 }
+
 
 int main(int argc, char * argv[]) {
 	risc_v_assembler r1(argv[1], argv[2]);
