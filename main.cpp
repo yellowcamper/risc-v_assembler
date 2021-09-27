@@ -354,8 +354,6 @@ void risc_v_assembler::makeLabel(string name, uint64_t pos) {
 	labels[name] = pos;
 }
 
-
-
 /**
  * \brief \c findLabelPos() gets the location of the label that was branched/jumped to. 
  * 
@@ -449,11 +447,11 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 				abort();
 			}
 			if ((temp.size() >= 2) && (temp.at(0) == '0') && (temp.at(1) == 'x')) {
-				instruction |= ((stoi(temp, nullptr, 16)) << 12);
+				instruction |= ((stoi(temp, nullptr, 16)) >> 12) << 12;
 			} else if ((temp.at(0) <= '9') && (temp.at(0) >= '0')) {
-				instruction |= ((stoi(temp, nullptr)) << 12);
+				instruction |= ((stoi(temp, nullptr)) >> 12) << 12;
 			} else {
-				instruction |= (((findLabelPos(temp) - pos)) << 12);
+				instruction |= (((findLabelPos(temp) - pos)) >> 12) << 12;
 			}
 		break;
 		case 'R':
@@ -669,7 +667,6 @@ void risc_v_assembler::setInputFile(char * input_file_name) {
 void risc_v_assembler::setOutputFile(char * output_file_name) {
 	output_file = output_file_name;
 }
-
 
 int main(int argc, char * argv[]) {
 	risc_v_assembler r1(argv[1], argv[2]);
