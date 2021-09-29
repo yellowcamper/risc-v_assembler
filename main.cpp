@@ -50,6 +50,8 @@ class risc_v_assembler {
 		 */
 		map <string, uint64_t> labels;
 		
+		
+		
 		uint32_t getRegister(string, uint8_t);
 		uint32_t getOpcode(string, char&);
 		void makeLabel(string, uint64_t);
@@ -152,25 +154,25 @@ uint32_t risc_v_assembler::getRegister(string input, uint8_t offset = 0) {
 uint32_t risc_v_assembler::getOpcode(string input, char &instruction_type) {
 	instruction_type = 0;
 	if (input.compare("lb") == 0) {
-		instruction_type = 'I';
+		instruction_type = 'L';
 		return 0b00000000000000000000000000000011;
 	} else if (input.compare("lh") == 0) {
-		instruction_type = 'I';
+		instruction_type = 'L';
 		return 0b00000000000000000001000000000011;
 	} else if (input.compare("lw") == 0) {
-		instruction_type = 'I';
+		instruction_type = 'L';
 		return 0b00000000000000000010000000000011;
 	} else if (input.compare("ld") == 0) {
-		instruction_type = 'I';
+		instruction_type = 'L';
 		return 0b00000000000000000011000000000011;
 	} else if (input.compare("lbu") == 0) {
-		instruction_type = 'I';
+		instruction_type = 'L';
 		return 0b00000000000000000100000000000011;
 	} else if (input.compare("lhu") == 0) {
-		instruction_type = 'I';
+		instruction_type = 'L';
 		return 0b00000000000000000101000000000011;
 	} else if (input.compare("lwu") == 0) {
-		instruction_type = 'I';
+		instruction_type = 'L';
 		return 0b00000000000000000110000000000011;
 	} else if (input.compare("addi") == 0) {
 		instruction_type = 'I';
@@ -391,7 +393,7 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 
 	char instruction_type;
 	
-	if ((temp.size() == 0 ) || (temp.at(0) == '#')) {
+	if ((temp.size() == 0 ) || (temp.at(0) == '#')) { // fix me
 		return 0;
 	}
 	
@@ -415,6 +417,8 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 		cerr << "ERROR: incorrect args at line \"" << pos << "\"\n";
 		abort();
 	}
+	string temp_2 = "";
+	char temp_c = 0;
 	
 	switch (instruction_type) {
 		case 'I':
@@ -439,6 +443,70 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 				instruction |= ((stoi(temp, nullptr)) << 20);
 			} else {
 				instruction |= (((findLabelPos(temp) - pos)) << 20);
+			}
+		break;
+		case 'L':
+			instruction |= getRegister(temp.substr(0, (temp.size() - 1)), 7);
+			
+			ss_input.get();
+			temp_c = ss_input.get();
+			while (temp_c != '(' && ss_input) {
+				temp_2 += temp_c;
+				temp_c = ss_input.get();
+			}
+			if (!(ss_input && (temp.at(0) != '#'))) {
+				cerr << "ERROR: incorrect args at line \"" << pos << "\"\n";
+				abort();
+			}
+			
+			ss_input >> temp;
+			
+			if (!(ss_input && (temp.at(0) != '#'))) {
+				cerr << "ERROR: incorrect args at line \"" << pos << "\"\n";
+				abort();
+			}
+			instruction |= getRegister(temp.substr(0, (temp.size() - 1)), 15);
+			
+			if ((temp_2.size() >= 2) && (temp_2.at(0) == '0') && (temp_2.at(1) == 'x')) {
+				instruction |= ((stoi(temp_2, nullptr, 16)) << 20);
+			} else if ((temp_2.at(0) <= '9') && (temp_2.at(0) >= '0')) {
+				instruction |= ((stoi(temp_2, nullptr)) << 20);
+			} else {
+				instruction |= (((findLabelPos(temp_2) - pos)) << 20);
+			}
+		break;
+		case 'S':
+			instruction |= getRegister(temp.substr(0, (temp.size() - 1)), 20);
+			
+			ss_input.get();
+			temp_c = ss_input.get();
+			while (temp_c != '(' && ss_input) {
+				temp_2 += temp_c;
+				temp_c = ss_input.get();
+			}
+			if (!(ss_input && (temp.at(0) != '#'))) {
+				cerr << "ERROR: incorrect args at line \"" << pos << "\"\n";
+				abort();
+			}
+			
+			ss_input >> temp;
+			
+			if (!(ss_input && (temp.at(0) != '#'))) {
+				cerr << "ERROR: incorrect args at line \"" << pos << "\"\n";
+				abort();
+			}
+			
+			instruction |= getRegister(temp.substr(0, (temp.size() - 1)), 15);
+			
+			if ((temp_2.size() >= 2) && (temp_2.at(0) == '0') && (temp_2.at(1) == 'x')) {
+				instruction |= ((stoi(temp_2, nullptr, 16) &  0b11111) << 7 ) | 
+							   ((stoi(temp_2, nullptr, 16) & ~0b11111) << 20);
+			} else if ((temp_2.at(0) <= '9') && (temp_2.at(0) >= '0')) {
+				instruction |= ((stoi(temp_2, nullptr) &  0b11111) << 7 ) | 
+							   ((stoi(temp_2, nullptr) & ~0b11111) << 20);
+			} else {
+				instruction |= (((findLabelPos(temp_2) - pos) &  0b11111) << 7 ) | 
+							   (((findLabelPos(temp_2) - pos) & ~0b11111) << 20);
 			}
 		break;
 		case 'U':
@@ -473,32 +541,6 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 				abort();
 			}
 			instruction |= getRegister(temp, 20);
-		break;
-		case 'S':
-			instruction |= getRegister(temp.substr(0, (temp.size() - 1)), 15);
-			
-			ss_input >> temp;
-			if (!(ss_input && (temp.at(0) != '#'))) {
-				cerr << "ERROR: incorrect args at line \"" << pos << "\"\n";
-				abort();
-			}
-			instruction |= getRegister(temp.substr(0, (temp.size() - 1)), 20);
-			
-			ss_input >> temp;
-			if (!(ss_input && (temp.at(0) != '#'))) {
-				cerr << "ERROR: incorrect args at line \"" << pos << "\"\n";
-				abort();
-			}
-			if ((temp.size() >= 2) && (temp.at(0) == '0') && (temp.at(1) == 'x')) {
-				instruction |= ((stoi(temp, nullptr, 16) &  0b11111) << 7 ) | 
-							   ((stoi(temp, nullptr, 16) & ~0b11111) << 20);
-			} else if ((temp.at(0) <= '9') && (temp.at(0) >= '0')) {
-				instruction |= ((stoi(temp, nullptr) &  0b11111) << 7 ) | 
-							   ((stoi(temp, nullptr) & ~0b11111) << 20);
-			} else {
-				instruction |= (((findLabelPos(temp) - pos) &  0b11111) << 7 ) | 
-							   (((findLabelPos(temp) - pos) & ~0b11111) << 20);
-			}
 		break;
 		case 'J':
 			instruction |= getRegister(temp.substr(0, (temp.size() - 1)), 15);
