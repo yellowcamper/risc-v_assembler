@@ -439,7 +439,7 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 			}
 			if ((temp.size() >= 2) && (temp.at(0) == '0') && (temp.at(1) == 'x')) {
 				instruction |= ((stoi(temp, nullptr, 16)) << 20);
-			} else if ((temp.at(0) <= '9') && (temp.at(0) >= '0')) {
+			} else if ((temp.at(0) <= '9') && (temp.at(0) >= '0') || (temp.at(0) == '-')) {
 				instruction |= ((stoi(temp, nullptr)) << 20);
 			} else {
 				instruction |= (((findLabelPos(temp) - pos)) << 20);
@@ -469,7 +469,7 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 			
 			if ((temp_2.size() >= 2) && (temp_2.at(0) == '0') && (temp_2.at(1) == 'x')) {
 				instruction |= ((stoi(temp_2, nullptr, 16)) << 20);
-			} else if ((temp_2.at(0) <= '9') && (temp_2.at(0) >= '0')) {
+			} else if ((temp_2.at(0) <= '9') && (temp_2.at(0) >= '0') || (temp_2.at(0) == '-')) {
 				instruction |= ((stoi(temp_2, nullptr)) << 20);
 			} else {
 				instruction |= (((findLabelPos(temp_2) - pos)) << 20);
@@ -501,7 +501,7 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 			if ((temp_2.size() >= 2) && (temp_2.at(0) == '0') && (temp_2.at(1) == 'x')) {
 				instruction |= ((stoi(temp_2, nullptr, 16) &  0b11111) << 7 ) | 
 							   ((stoi(temp_2, nullptr, 16) & ~0b11111) << 20);
-			} else if ((temp_2.at(0) <= '9') && (temp_2.at(0) >= '0')) {
+			} else if ((temp_2.at(0) <= '9') && (temp_2.at(0) >= '0') || (temp_2.at(0) == '-')) {
 				instruction |= ((stoi(temp_2, nullptr) &  0b11111) << 7 ) | 
 							   ((stoi(temp_2, nullptr) & ~0b11111) << 20);
 			} else {
@@ -519,7 +519,7 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 			}
 			if ((temp.size() >= 2) && (temp.at(0) == '0') && (temp.at(1) == 'x')) {
 				instruction |= ((stoi(temp, nullptr, 16)) << 12);
-			} else if ((temp.at(0) <= '9') && (temp.at(0) >= '0')) {
+			} else if ((temp.at(0) <= '9') && (temp.at(0) >= '0') || (temp.at(0) == '-')) {
 				instruction |= ((stoi(temp, nullptr)) << 12);
 			} else {
 				instruction |= (((findLabelPos(temp) - pos)) << 12);
@@ -555,7 +555,7 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 							   (((stoi(temp, nullptr, 16) >> 1 ) & 0x3ff) << 21) | 
 							   (((stoi(temp, nullptr, 16) >> 11) & 0x1  ) << 20) | 
 							   (((stoi(temp, nullptr, 16) >> 12) & 0xff ) << 12);
-			} else if ((input.at(0) <= '9') && (input.at(0) >= '0')) {
+			} else if ((temp.at(0) <= '9') && (temp.at(0) >= '0') || (temp.at(0) == '-')) {
 				instruction |= (((stoi(temp, nullptr) >> 20) & 0x1  ) << 31) | 
 							   (((stoi(temp, nullptr) >> 1 ) & 0x3ff) << 21) | 
 							   (((stoi(temp, nullptr) >> 11) & 0x1  ) << 20) | 
@@ -587,7 +587,7 @@ uint32_t risc_v_assembler::processLine(string input, uint64_t pos) {
 							   (((stoi(temp, nullptr, 16) >> 1 ) & 0xf ) << 8 ) | 
 							   (((stoi(temp, nullptr, 16) >> 5 ) & 0x3f) << 25) | 
 							   (((stoi(temp, nullptr, 16) >> 12) & 0x1 ) << 31);
-			} else if ((input.at(0) <= '9') && (input.at(0) >= '0')) {
+			} else if ((temp.at(0) <= '9') && (temp.at(0) >= '0') || (temp.at(0) == '-')) {
 				instruction |= (((stoi(temp, nullptr) >> 11) & 0x1 ) << 7 ) | 
 							   (((stoi(temp, nullptr) >> 1 ) & 0xf ) << 8 ) | 
 							   (((stoi(temp, nullptr) >> 5 ) & 0x3f) << 25) | 
@@ -676,6 +676,8 @@ void risc_v_assembler::process() {
 	ss_input.str(input);
 	
 	for (int i = 1; fin; i++) {
+		cout << input << "\n";
+		
 		instruction = processLine(input, i);
 		
 		if (instruction == 0) {
